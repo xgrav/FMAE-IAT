@@ -307,7 +307,7 @@ def main(args):
 
         print(f"Accuracy at epoch {epoch}: {test_stats['acc1']:.1f}%")
         if test_stats["acc1"] > max_accuracy:
-            os.remove(os.path.join(args.output_dir, f'checkpoint-{max_acc_epoch}.th')
+            os.remove(os.path.join(args.output_dir, f'checkpoint-{max_acc_epoch}.th'))
             max_accuracy = test_stats["acc1"]
             max_acc_epoch = epoch
             if args.save_ckpt:
