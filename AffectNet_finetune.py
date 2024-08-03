@@ -307,8 +307,14 @@ def main(args):
 
         print(f"Accuracy at epoch {epoch}: {test_stats['acc1']:.1f}%")
         if test_stats["acc1"] > max_accuracy:
+            os.remove(os.path.join(args.output_dir, f'checkpoint-{max_acc_epoch}.th')
             max_accuracy = test_stats["acc1"]
             max_acc_epoch = epoch
+            if args.save_ckpt:
+                misc.save_model(
+                    args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
+                    loss_scaler=loss_scaler, epoch=max_acc_epoch
+                )
         print(f'Max accuracy: {max_accuracy:.2f}% at epoch {max_acc_epoch}')
 
         # if log_writer is not None:
@@ -326,11 +332,7 @@ def main(args):
         #         log_writer.flush()
         #     with open(os.path.join(args.output_dir, "log.txt"), mode="a", encoding="utf-8") as f:
         #         f.write(json.dumps(log_stats) + "\n")
-    if args.save_ckpt:
-            misc.save_model(
-                args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
-                loss_scaler=loss_scaler, epoch=epoch
-            )
+   
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
