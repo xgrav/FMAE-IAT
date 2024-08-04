@@ -135,7 +135,8 @@ def get_args_parser():
 
 
 def main(args):
-    misc.init_single_GPU_mode(args)
+    # misc.init_single_GPU_mode(args)
+    misc.init_distributed_mode(args)
     print('job dir: {}'.format(os.path.dirname(os.path.realpath(__file__))))
     print("{}".format(args).replace(', ', ',\n'))
     device = torch.device(args.device)
@@ -253,11 +254,9 @@ def main(args):
     print("accumulate grad iterations: %d" % args.accum_iter)
     print("effective batch size: %d" % eff_batch_size)
 
-    # if args.distributed:
-        # model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-        # model_without_ddp = model.module
-    model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
-    model_without_ddp = model.module
+    if args.distributed:
+        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu])
+        model_without_ddp = model.module
     # optimizer with layer-wise lr decay (lrd)
     param_groups = lrd.param_groups_lrd(
         model_without_ddp, args.weight_decay,
